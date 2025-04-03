@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Typing Master - Practice Hindi & English</title>
+    <style>
+        :root {
+            --primary-color: #4a6fa5;
+            --secondary-color: #166088;
+            --accent-color: #4fc3f7;
+            --light-color: #f8f9fa;
+            --dark-color: #343a40;
+            --success-color: #28a745;
+            --warning-color: #ffc107;
+            --danger-color: #dc3545;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f7fa;
+            color: var(--dark-color);
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px 0;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        h1 {
+            margin: 0;
+            font-size: 2.5rem;
+        }
+        
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .control-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background-color: white;
+            padding: 10px 15px;
+            border-radius: 6px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+        
+        label {
+            font-weight: 600;
+        }
+        
+        select, button {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+            background-color: white;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        select:focus, button:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 2px rgba(79, 195, 247, 0.3);
+        }
+        
+        button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            font-weight: 500;
+        }
+        
+        button:hover {
+            background-color: var(--secondary-color);
+            transform: translateY(-1px);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        .timer {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--secondary-color);
+            background-color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+        
+        .typing-area {
+            background-color: white;
+            border-radius: 8px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+        
+        .text-display {
+            font-size: 1.2rem;
+            line-height: 1.8;
+            margin-bottom: 20px;
+            color: #555;
+            height: 200px;
+            overflow-y: auto;
+            padding: 10px;
+            border: 1px solid #eee;
+            border-radius: 4px;
+            background-color: #fafafa;
+        }
+        
+        .text-input {
+            width: 100%;
+            padding: 12px;
+            font-size: 1.1rem;
+            border: 2px solid #ddd;
+            border-radius: 4px;
+            resize: none;
+            height: 100px;
+            font-family: inherit;
+        }
+        
+        .text-input:focus {
+            outline: none;
+            border-color: var(--accent-color);
+        }
+        
+        .results {
+            display: none;
+            background-color: white;
+            border-radius: 8px;
+            padding: 25px;
+            margin-top: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+        
+        .results h2 {
+            margin-top: 0;
+            color: var(--primary-color);
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .stat {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 6px;
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin: 5px 0;
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            color: #666;
+        }
+        
+        .correct {
+            color: var(--success-color);
+            background-color: rgba(40, 167, 69, 0.1);
+        }
+        
+        .incorrect {
+            color: var(--danger-color);
+            background-color: rgba(220, 53, 69, 0.1);
+            text-decoration: underline;
+        }
+        
+        .current {
+            background-color: rgba(79, 195, 247, 0.2);
+            border-radius: 2px;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            padding: 20px;
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        @media (max-width: 768px) {
+            .controls {
+                flex-direction: column;
+            }
+            
+            .control-group {
+                width: 100%;
+                justify-content: space-between;
+            }
+            
+            .stats {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Typing Master</h1>
+            <p>Improve your typing speed in Hindi and English</p>
+        </header>
+        
+        <div class="controls">
+            <div class="control-group">
+                <label for="language">Language:</label>
+                <select id="language">
+                    <option value="english">English</option>
+                    <option value="hindi">Hindi</option>
+                </select>
+            </div>
+            
+            <div class="control-group">
+                <label for="time">Time (minutes):</label>
+                <select id="time">
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="5">5</option>
+                    <option value="10" selected>10</option>
+                    <option value="15">15</option>
+                    <option value="20">20</option>
+                    <option value="30">30</option>
+                </select>
+            </div>
+            
+            <div class="control-group">
+                <button id="start-btn">Start Test</button>
+                <div class="timer" id="timer">00:00</div>
+            </div>
+        </div>
+        
+        <div class="typing-area">
+            <div class="text-display" id="text-display"></div>
+            <textarea class="text-input" id="text-input" placeholder="Click here or press any key to start typing..." disabled></textarea>
+        </div>
+        
+        <div class="results" id="results">
+            <h2>Your Results</h2>
+            <div class="stats">
+                <div class="stat">
+                    <div class="stat-value" id="wpm">0</div>
+                    <div class="stat-label">Words Per Minute</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value" id="accuracy">0%</div>
+                    <div class="stat-label">Accuracy</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value" id="correct-chars">0</div>
+                    <div class="stat-label">Correct Characters</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value" id="incorrect-chars">0</div>
+                    <div class="stat-label">Incorrect Characters</div>
+                </div>
+            </div>
+            <button id="try-again-btn">Try Again</button>
+        </div>
+    </div>
+    
+    <footer>
+        <p>Practice regularly to improve your typing speed and accuracy.</p>
+    </footer>
+    
+    <script>
+        // Sample paragraphs
+        const englishParagraphs = [
+            "The quick brown fox jumps over the lazy dog. This sentence contains all the letters in the English alphabet. Typing is an essential skill in today's digital world, and practicing regularly can significantly improve your speed and accuracy. The ability to type quickly and accurately can save you a considerable amount of time in your daily work and studies. Many professions now require efficient typing skills as most communication and documentation happens through computers and digital devices. Consistent practice is the key to becoming a proficient typist. Start with slow and accurate typing, then gradually increase your speed while maintaining accuracy. Remember that accuracy is more important than speed in the beginning stages of learning. As you become more comfortable with the keyboard layout, your speed will naturally increase. Try to maintain proper posture while typing to prevent strain and fatigue. Keep your fingers on the home row keys and use all your fingers for typing to achieve maximum efficiency. With dedication and regular practice, you can master the skill of touch typing.",
+            "Technology has transformed the way we live and work in the twenty-first century. From smartphones to artificial intelligence, technological advancements are happening at an unprecedented pace. The internet has connected the world in ways that were unimaginable just a few decades ago. Digital literacy has become as important as traditional literacy in today's world. The ability to navigate digital platforms and tools is essential for both personal and professional growth. Computers have revolutionized every industry, from healthcare to education to entertainment. Learning to type efficiently is one of the fundamental digital skills everyone should develop. In the modern workplace, typing is often taken for granted but remains a critical skill for productivity. Many jobs require employees to type reports, emails, and documents on a daily basis. Improving your typing skills can make you more efficient and valuable in any professional setting. The time invested in learning to type properly will pay dividends throughout your career. Whether you're a student, professional, or simply someone who uses computers regularly, good typing skills will serve you well in all aspects of life.",
+            "Practice makes perfect when it comes to developing any skill, and typing is no exception. Regular practice sessions will help you build muscle memory for the keyboard layout. The more you practice, the more natural typing will feel, and the less you'll need to look at the keyboard. Setting aside just 15-20 minutes daily for focused typing practice can lead to significant improvements over time. It's important to practice with proper technique from the beginning to avoid developing bad habits that can be hard to break later. Focus on accuracy first, then work on increasing your speed gradually. Typing tests are a great way to track your progress and identify areas that need improvement. Challenge yourself with different types of texts to become comfortable with various words and sentence structures. Don't get discouraged if progress seems slow at first - improvement comes with consistent effort over time. Celebrate small victories along the way to stay motivated in your typing journey. Remember that everyone learns at their own pace, so don't compare your progress to others. With patience and persistence, you'll see your typing skills improve steadily."
+        ];
+        
+        const hindiParagraphs = [
+            "मनुष्य एक सामाजिक प्राणी है और भाषा के माध्यम से ही वह अपने विचारों को दूसरों तक पहुँचाता है। हिंदी भारत की राष्ट्रभाषा है और देवनागरी लिपि में लिखी जाती है। टाइपिंग एक महत्वपूर्ण कौशल है जो आज के डिजिटल युग में हर किसी के लिए आवश्यक हो गया है। हिंदी में टाइपिंग सीखने से न केवल आपकी उत्पादकता बढ़ेगी बल्कि यह आपके करियर के अवसरों को भी विस्तृत करेगा। नियमित अभ्यास से आप हिंदी टाइपिंग में दक्ष हो सकते हैं और अपनी गति तथा शुद्धता में सुधार कर सकते हैं। शुरुआत में धीमी गति से लेकिन शुद्धता पर ध्यान देना चाहिए, गति तो स्वतः ही बढ़ जाएगी। कीबोर्ड पर सभी उंगलियों का प्रयोग करना सीखें ताकि आप अधिक कुशलता से टाइप कर सकें। हिंदी टाइपिंग में मात्राओं और संयुक्ताक्षरों पर विशेष ध्यान देना चाहिए क्योंकि यही शुद्ध हिंदी लिखने का आधार है। टाइप करते समय सही मुद्रा में बैठें और अपनी उंगलियों को होम रो पर रखें। प्रतिदिन थोड़ा समय निकालकर अभ्यास करने से आप जल्द ही हिंदी में तेज और सटीक टाइप करने में सक्षम हो जाएंगे।",
+            "कंप्यूटर और इंटरनेट ने आधुनिक जीवन को पूरी तरह से बदल दिया है। आज लगभग सभी क्षेत्रों में कंप्यूटर का उपयोग होता है और डिजिटल साक्षरता एक आवश्यक कौशल बन गया है। हिंदी में कुशलता से टाइप करना आपको रोजगार के अधिक अवसर प्रदान कर सकता है क्योंकि अब सरकारी और निजी क्षेत्रों में हिंदी सामग्री की मांग बढ़ रही है। ई-मेल, दस्तावेज तैयार करना, रिपोर्ट लिखना आदि कार्यों के लिए टाइपिंग कौशल की आवश्यकता होती है। हिंदी भाषा में डिजिटल सामग्री निर्माण का क्षेत्र तेजी से विकसित हो रहा है जिसमें अच्छी टाइपिंग स्पीड वाले लोगों के लिए अवसर हैं। मोबाइल और कंप्यूटर पर हिंदी में काम करने की क्षमता आपको प्रतिस्पर्धात्मक लाभ दे सकती है। हिंदी टाइपिंग सीखने से आप न केवल अपने संचार कौशल को बेहतर बना सकते हैं बल्कि विभिन्न ऑनलाइन प्लेटफॉर्म्स पर हिंदी में सक्रिय भागीदारी भी कर सकते हैं। डिजिटल भारत के इस दौर में हिंदी टाइपिंग एक उपयोगी कौशल साबित हो सकता है।",
+            "अभ्यास हर कौशल को निखारने का सबसे सही तरीका है और टाइपिंग भी इसका अपवाद नहीं है। नियमित रूप से टाइपिंग का अभ्यास करने से आपकी उंगलियों को कीबोर्ड की लेआउट की आदत हो जाती है। प्रतिदिन 15-20 मिनट का नियमित अभ्यास आपकी टाइपिंग गति और शुद्धता में उल्लेखनीय सुधार ला सकता है। शुरुआत में सही तकनीक पर ध्यान देना महत्वपूर्ण है ताकि गलत आदतें न बनें जिन्हें बाद में सुधारना मुश्किल होता है। पहले शुद्धता पर ध्यान दें, फिर धीरे-धीरे अपनी गति बढ़ाने का प्रयास करें। टाइपिंग टेस्ट आपकी प्रगति को ट्रैक करने और सुधार की आवश्यकता वाले क्षेत्रों की पहचान करने का एक शानदार तरीका है। विभिन्न प्रकार के पाठों के साथ अभ्यास करें ताकि आप विभिन्न शब्दों और वाक्य संरचनाओं के साथ सहज हो सकें। यदि शुरुआत में प्रगति धीमी लगे तो निराश न हों - निरंतर प्रयास से सुधार आता है। अपनी टाइपिंग यात्रा में छोटी-छोटी सफलताओं का जश्न मनाकर प्रेरित रहें। याद रखें कि हर कोई अपनी गति से सीखता है, इसलिए अपनी प्रगति की तुलना दूसरों से न करें। धैर्य और लगन के साथ आप अपने टाइपिंग कौशल में निरंतर सुधार देखेंगे।"
+        ];
+        
+        // DOM elements
+        const languageSelect = document.getElementById('language');
+        const timeSelect = document.getElementById('time');
+        const startBtn = document.getElementById('start-btn');
+        const timerDisplay = document.getElementById('timer');
+        const textDisplay = document.getElementById('text-display');
+        const textInput = document.getElementById('text-input');
+        const resultsSection = document.getElementById('results');
+        const wpmDisplay = document.getElementById('wpm');
+        const accuracyDisplay = document.getElementById('accuracy');
+        const correctCharsDisplay = document.getElementById('correct-chars');
+        const incorrectCharsDisplay = document.getElementById('incorrect-chars');
+        const tryAgainBtn = document.getElementById('try-again-btn');
+        
+        // Variables
+        let timer;
+        let timeLeft;
+        let isTestRunning = false;
+        let startTime;
+        let endTime;
+        let totalTyped = 0;
+        let correctTyped = 0;
+        let currentParagraph = '';
+        let currentCharIndex = 0;
+        
+        // Initialize
+        function init() {
+            textInput.disabled = true;
+            resultsSection.style.display = 'none';
+            updateTimerDisplay(0);
+            
+            // Event listeners
+            startBtn.addEventListener('click', startTest);
+            tryAgainBtn.addEventListener('click', resetTest);
+            textInput.addEventListener('input', checkTyping);
+            textInput.addEventListener('keydown', handleFirstKeyPress);
+            languageSelect.addEventListener('change', resetTest);
+            timeSelect.addEventListener('change', resetTest);
+        }
+        
+        // Start test
+        function startTest() {
+            if (isTestRunning) return;
+            
+            const language = languageSelect.value;
+            const timeMinutes = parseInt(timeSelect.value);
+            timeLeft = timeMinutes * 60; // Convert to seconds
+            
+            // Select random paragraph
+            currentParagraph = language === 'english' 
+                ? englishParagraphs[Math.floor(Math.random() * englishParagraphs.length)]
+                : hindiParagraphs[Math.floor(Math.random() * hindiParagraphs.length)];
+            
+            // Display paragraph with highlighting
+            displayText();
+            
+            // Enable input
+            textInput.disabled = false;
+            textInput.value = '';
+            textInput.focus();
+            
+            // Start timer
+            isTestRunning = true;
+            startTime = new Date();
+            currentCharIndex = 0;
+            totalTyped = 0;
+            correctTyped = 0;
+            
+            timer = setInterval(() => {
+                timeLeft--;
+                updateTimerDisplay(timeLeft);
+                
+                if (timeLeft <= 0) {
+                    endTest();
+                }
+            }, 1000);
+            
+            startBtn.disabled = true;
+            resultsSection.style.display = 'none';
+        }
+        
+        // Handle first key press (auto-start)
+        function handleFirstKeyPress(e) {
+            if (!isTestRunning && !textInput.disabled) {
+                startTest();
+            }
+        }
+        
+        // Display text with highlighting
+        function displayText() {
+            let html = '';
+            
+            for (let i = 0; i < currentParagraph.length; i++) {
+                let char = currentParagraph[i];
+                
+                if (i === currentCharIndex) {
+                    html += `<span class="current">${char}</span>`;
+                } else if (i < currentCharIndex) {
+                    // Already typed characters
+                    const isCorrect = textInput.value[i] === currentParagraph[i];
+                    html += `<span class="${isCorrect ? 'correct' : 'incorrect'}">${char}</span>`;
+                } else {
+                    // Not yet typed characters
+                    html += char;
+                }
+            }
+            
+            textDisplay.innerHTML = html;
+            
+            // Scroll to keep current character visible
+            const currentSpan = textDisplay.querySelector('.current');
+            if (currentSpan) {
+                currentSpan.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        }
+        
+        // Check typing against sample text
+        function checkTyping() {
+            if (!isTestRunning) return;
+            
+            const typedText = textInput.value;
+            totalTyped = typedText.length;
+            
+            // Count correct characters
+            correctTyped = 0;
+            for (let i = 0; i < typedText.length; i++) {
+                if (typedText[i] === currentParagraph[i]) {
+                    correctTyped++;
+                }
+            }
+            
+            // Update current character index
+            currentCharIndex = typedText.length;
+            
+            // Update display
+            displayText();
+            
+            // If user reaches end of text, provide new paragraph
+            if (currentCharIndex >= currentParagraph.length) {
+                const language = languageSelect.value;
+                const newParagraph = language === 'english' 
+                    ? englishParagraphs[Math.floor(Math.random() * englishParagraphs.length)]
+                    : hindiParagraphs[Math.floor(Math.random() * hindiParagraphs.length)];
+                
+                currentParagraph += ' ' + newParagraph;
+                displayText();
+            }
+        }
+        
+        // End test
+        function endTest() {
+            clearInterval(timer);
+            isTestRunning = false;
+            endTime = new Date();
+            
+            // Calculate results
+            const timeInMinutes = (endTime - startTime) / (1000 * 60);
+            const words = textInput.value.trim().split(/\s+/).length;
+            const wpm = Math.round(words / timeInMinutes);
+            const accuracy = totalTyped > 0 ? Math.round((correctTyped / totalTyped) * 100) : 0;
+            
+            // Display results
+            wpmDisplay.textContent = wpm;
+            accuracyDisplay.textContent = accuracy + '%';
+            correctCharsDisplay.textContent = correctTyped;
+            incorrectCharsDisplay.textContent = totalTyped - correctTyped;
+            
+            resultsSection.style.display = 'block';
+            textInput.disabled = true;
+            startBtn.disabled = false;
+        }
+        
+        // Reset test
+        function resetTest() {
+            clearInterval(timer);
+            isTestRunning = false;
+            textInput.disabled = true;
+            textInput.value = '';
+            textDisplay.textContent = 'Select your language and time, then click "Start Test" or press any key to begin.';
+            resultsSection.style.display = 'none';
+            startBtn.disabled = false;
+            updateTimerDisplay(0);
+        }
+        
+        // Update timer display
+        function updateTimerDisplay(seconds) {
+            const mins = Math.floor(seconds / 60);
+            const secs = seconds % 60;
+            timerDisplay.textContent = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+            
+            // Change color when time is running low
+            if (seconds <= 30) {
+                timerDisplay.style.color = 'var(--danger-color)';
+            } else if (seconds <= 60) {
+                timerDisplay.style.color = 'var(--warning-color)';
+            } else {
+                timerDisplay.style.color = 'var(--secondary-color)';
+            }
+        }
+        
+        // Initialize the app
+        init();
+    </script>
+</body>
+</html>
